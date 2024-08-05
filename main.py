@@ -6,6 +6,7 @@ from pathlib import Path
 world_name='world'
 list_file=['ops.json','banned-players.json','whitelist.json','usercache.json']
 list_dir=[['playerdata','.dat'],['playerdata','.dat_old'],['advancements','.json'],['stats','.json']]
+ignors=['']
 
 class Player:
     def __init__(self,name,uuid,online_uuid):
@@ -14,6 +15,8 @@ class Player:
         self.online_uuid=online_uuid
 
 def get_uuid(user_name):
+    if 'bot_'in user_name or 'BOT_' in user_name or 'Bot_' in user_name:
+        return None
     try:
         resp = requests.get(f"https://api.mojang.com/users/profiles/minecraft/{user_name}")
         resp.raise_for_status()
@@ -36,7 +39,8 @@ def get_players():
     for player in data:
         print(f'getting uuid {player["name"]}')
         if online_uuid:=get_uuid(player['name']):
-            players.append(Player(player['name'],player['uuid'],online_uuid))
+            if online_uuid != player['uuid']:
+                players.append(Player(player['name'],player['uuid'],online_uuid))
     return players
 
 def modify_json(players,filename):
