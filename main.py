@@ -8,6 +8,7 @@ list_file=['ops.json','banned-players.json','whitelist.json','usercache.json']
 list_dir=[['playerdata','.dat'],['playerdata','.dat_old'],['advancements','.json'],['stats','.json']]
 ignors=['']
 
+os.chdir(Path('server'))
 class Player:
     def __init__(self,name,uuid,online_uuid):
         self.name=name
@@ -19,10 +20,8 @@ def get_uuid(user_name):
         return None
     try:
         resp = requests.get(f"https://api.mojang.com/users/profiles/minecraft/{user_name}")
-        resp.raise_for_status()
         data = resp.json()
-        uuid = data.get("id")
-        if uuid:
+        if uuid:=data.get('id'):
             return f"{uuid[:8]}-{uuid[8:12]}-{uuid[12:16]}-{uuid[16:20]}-{uuid[20:]}"
     except requests.exceptions.HTTPError as http_err:
         print(f"HTTP error occurred: {http_err}")
